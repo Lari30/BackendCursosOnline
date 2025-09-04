@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Projeto Backend PPI ADS 2025 Site de Cursos online",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
