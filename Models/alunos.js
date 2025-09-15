@@ -10,7 +10,8 @@ export default class Alunos {
     #sobrenome;
     #RA;
     #cep;
-    #cidade;
+    #matricula;
+    
 
     constructor (cpf = "", nome = "", sobrenome = "", RA = "", cep = "", cidade = {}){
         this.#cpf = cpf;
@@ -18,7 +19,7 @@ export default class Alunos {
         this.#sobrenome = sobrenome;
         this.#RA = RA;
         this.#cep = cep
-        this.#cidade = cidade; //relacionamento da classe cliente e cidade
+        this.#matricula = matricula; //relacionamento da classe cliente e cidade
     }
 
     
@@ -59,12 +60,12 @@ export default class Alunos {
         this.#cep = cep
     }
 
-    get cidade(){
-        return this.#cidade
+    get matri(){
+        return this.#matricula
     }
 
-    set cidade(cidade){
-        this.#cidade = cidade
+    set matricula(matricula){
+        this.#matricula = matricula
     }
 
     toString(){
@@ -73,7 +74,7 @@ export default class Alunos {
         Nome  Completo: ${this.#nome} ${this.#sobrenome}\n
         RA: ${this.#RA}\n
         CEP: ${this.#cep}\n
-        Cidade: ${this.#cidade}\n
+        Matricula: ${this.#matricula}\n
         `;
     }
 
@@ -84,7 +85,7 @@ export default class Alunos {
             sobrenome: this.#sobrenome,
             ra: this.#RA,
             cep: this.#cep,
-            cidade: this.#cidade
+            matricula: this.#matricula
         }
     }
 
@@ -102,8 +103,15 @@ export default class Alunos {
     }
     async consultar(){
         const alunosDAO = new AlunosDAO;
-        return await alunosDAO.consultar(this);
+        return await alunosDAO.consultar();
     }
+
+    async consultarCPF(){
+        const alunosDAO = new AlunosDAO;
+        return await alunosDAO.consultarCPF(cpf);
+    }
+
+
 
 
 
