@@ -6,8 +6,20 @@ export default class AlunosController{
 gravar(requisicao, resposta){
     if (requisicao.method === "POST" && requisicao.is("application/json")) { 
            const dados = requisicao.body;
-        if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && dados.matricula ){
-            const alunos = new Alunos(cpf, dados.nome, dados.sobrenome, dados.ra, dados.cep, dados.matricula);
+           const cpf = requisicao.params.cpf;
+           const matricula = dados.matricula ?? dados.id_matricula ?? null;
+           
+        if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && matricula ){
+            
+            const alunos = new Alunos(
+                cpf, 
+                dados.nome, 
+                dados.sobrenome, 
+                dados.ra, 
+                dados.cep, 
+                matricula
+            );
+
             alunos.gravar()
             .then(()=>{
                 resposta.status(200).json({
@@ -39,13 +51,15 @@ gravar(requisicao, resposta){
         }
     };
     alterar(requisicao, resposta){
-     if (requisicao.method === "PUT" || requisicao.method == "PATCH" && requisicao.is("application/json")) { 
+     if ((requisicao.method === "PUT" || requisicao.method === "PATCH") && requisicao.is("application/json"))
+        { 
            const dados = requisicao.body;
            //http://localhost:4000/alunos/376.182.308-89
            const cpf = requisicao.params.cpf;  //cpf ser informado na url
+           const matricula = dados.matricula ?? dados.id_matricula ?? null;
 
-        if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && dados.matricula ){
-            const alunos = new Alunos(cpf, dados.nome, dados.sobrenome, dados.ra, dados.cep, dados.matricula);
+        if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && matricula ){
+            const alunos = new Alunos(cpf, dados.nome, dados.sobrenome, dados.ra, dados.cep, matricula);
             alunos.alterar()
             .then(()=>{
                 resposta.status(200).json({
@@ -73,6 +87,7 @@ gravar(requisicao, resposta){
                 mensagem: "Requisição inválida"
             });
         }};
+        
     excluir(requisicao, resposta){
         if(requisicao.method === "DELETE"){
             const cpf = requisicao.params.cpf;
@@ -80,9 +95,9 @@ gravar(requisicao, resposta){
                 const alunos = new Alunos();
                 alunos.consultarCPF(cpf)
                 .then((listaAlunos) => {
-                    const alunos = listaAlunos[0];
-                    if(alunos){
-                        alunos.excluir()
+                    const encontrado = listaAlunos[0];
+                    if(encontrado){
+                        encontrado.excluir()
                         .then(() => {
                             resposta.status(200).json({
                                 status: true,
@@ -128,14 +143,14 @@ gravar(requisicao, resposta){
     consultar(requisicao, resposta){
         if (requisicao.method === "GET"){
             const cpf = requisicao.params.cpf;
-            const alunos = Alunos();
+            const alunos = new Alunos();
             if(cpf){
                 alunos.consultarCPF(cpf)
                 .then((listaAlunos) => {
                     if (listaAlunos.length > 0 ) {
                      resposta.status(200).json({
                         status: true,
-                        mensagem: "Consulta realziada com sucesso",
+                        mensagem: "Consulta realizada com sucesso",
                         alunos: listaAlunos
                     });
 
@@ -157,17 +172,28 @@ gravar(requisicao, resposta){
                     });
 
                   });  
-            
-                                    
+
             }
             else{
                 alunos.consultar()
-                .then()
-                .catch();
-            }
+                .then((listaAlunos)=>{
+                    resposta.status(200).json({
+                        status: true,
+                        mensagem: "Consulta realizada com sucesso",
+                        alunos: listaAlunos
+                    });
+                })
+                .catch((erro)=>{
+                    resposta.status(500).json({
+                        status: false,
+                        mensagem: "Erro ao consultar o aluno: " + erro.message
+                    });
+                });
+            }  
 
 
         }
+        
         else{
             resposta.status(400).json({
                 status: false,

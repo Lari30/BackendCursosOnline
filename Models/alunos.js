@@ -8,16 +8,16 @@ export default class Alunos {
     #cpf;
     #nome;
     #sobrenome;
-    #RA;
+    #ra;
     #cep;
     #matricula;
     
 
-    constructor (cpf = "", nome = "", sobrenome = "", RA = "", cep = "", cidade = {}){
+    constructor (cpf = "", nome = "", sobrenome = "", ra = "", cep = "", matricula = ""){
         this.#cpf = cpf;
         this.#nome = nome;
         this.#sobrenome = sobrenome;
-        this.#RA = RA;
+        this.#ra = ra;
         this.#cep = cep
         this.#matricula = matricula; //relacionamento da classe cliente e cidade
     }
@@ -46,11 +46,11 @@ export default class Alunos {
         this.#sobrenome = sobrenome
     }
 
-    get RA(){
-        return this.#RA
+    get ra(){
+        return this.#ra
     }
-    set RA(RA){
-        this.#RA = RA
+    set ra(ra){
+        this.#ra = ra
     }
 
     get cep(){
@@ -60,7 +60,7 @@ export default class Alunos {
         this.#cep = cep
     }
 
-    get matri(){
+    get matricula(){
         return this.#matricula
     }
 
@@ -72,7 +72,7 @@ export default class Alunos {
         return `
         CPF: ${this.#cpf}\n
         Nome  Completo: ${this.#nome} ${this.#sobrenome}\n
-        RA: ${this.#RA}\n
+        RA: ${this.#ra}\n
         CEP: ${this.#cep}\n
         Matricula: ${this.#matricula}\n
         `;
@@ -83,7 +83,7 @@ export default class Alunos {
             cpf: this.#cpf,
             nome: this.#nome,
             sobrenome: this.#sobrenome,
-            ra: this.#RA,
+            ra: this.#ra,
             cep: this.#cep,
             matricula: this.#matricula
         }
@@ -108,7 +108,7 @@ export default class Alunos {
 
     async consultarCPF(){
         const alunosDAO = new AlunosDAO;
-        return await alunosDAO.consultarCPF(cpf);
+        return await alunosDAO.consultarCPF(this.#cpf);
     }
 
 

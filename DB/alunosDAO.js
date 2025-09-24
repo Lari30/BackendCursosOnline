@@ -1,4 +1,4 @@
-import Alunos from "../Models/alunos";
+import Alunos from "../Models/alunos.js";
 import conectar from "./conexao.js";
 
 export default class AlunosDAO{
@@ -8,19 +8,25 @@ export default class AlunosDAO{
 
         if (alunos instanceof Alunos) {
             const conexao = await conectar();
-            "INSERT INTO alunos (cpf_alu, nome_alu, sobrenome_alu, ra_alu, cep_alu) VALUES (?,?,?,?,?)";
+            const sql = "INSERT INTO alunos (cpf_alu, nome_alu, sobrenome_alu, ra_alu, cep_alu, id_matricula) VALUES (?,?,?,?,?,?)";
             const parametros = [
                 alunos.cpf,
                 alunos.nome,
                 alunos.sobrenome,
-                alunos.RA,
+                alunos.ra,
                 alunos.cep,
-                alunos.id_matricula //(chave estrangeira )
+                alunos.matricula //(chave estrangeira )
 
             ];
 
+            console.log(">>> Parametros gravar:", parametros);
+
+
             await conexao.execute(sql, parametros);
             conexao.release(); // devolve a conexao para o pool
+
+           
+
 
         }
     }
@@ -32,8 +38,9 @@ export default class AlunosDAO{
             const parametros = [
                 alunos.nome,
                 alunos.sobrenome,
-                alunos.RA,
+                alunos.ra,
                 alunos.cep,
+                alunos.matricula,
                 alunos.cpf
 
             ];
@@ -61,36 +68,29 @@ export default class AlunosDAO{
             alu.cpf_alu,
             alu.nome_alu,
             alu.sobrenome_alu,
-            mat.id_matricula,
-            mat.data_matricula,
-            cur.id_curso,
-            cur.nome_curso,
-            cur.carga_horaria,
-            cur.valor
+            alu.ra_alu,
+            alu.cep_alu,
+            alu.id_matricula,
         FROM alunos alu
-        INNER JOIN matriculas mat  ON mat.cpf_alu = alu.cpf_alu
-        INNER JOIN cursos cur      ON cur.id_curso = mat.id_curso
-        WHERE alu.cpf_alu = ?
-        ORDER BY mat.data_matricula DESC
-    `;
-        const [registros] = await conexao.query(sql, [cpf]);
+        `;
+        const [registros] = await conexao.query(sql);
         await conexao.release();
 
 
-        let listaAlunos = [];
-        for (const registro of registros){
-            const alunos = new Alunos(registro.mat_cpf, registro.mat_nome, registro.mat_curso);
-            const matricula = new Matricula(registro.mat_cpf,
-                                            registro.mat_nome,
-                                            registro.mat_curso);
-                listaAlunos.push(alunos);
-        }
+        return registros.map(registro =>
+        new Alunos(
+            registro.cpf_alu,
+            registro.nome_alu,
+            registro.sobrenome_alu,
+            registro.ra_alu,
+            registro.cep_alu,
+            registro.id_matricula
+        )
+     );
+  }
 
-        return listaAlunos;
-    }
 
     async consultarCPF(cpf){
-        cpf = cpf || ' ';
         const conexao = await conectar();
 
         const sql = `
@@ -98,31 +98,25 @@ export default class AlunosDAO{
             alu.cpf_alu,
             alu.nome_alu,
             alu.sobrenome_alu,
-            mat.id_matricula,
-            mat.data_matricula,
-            cur.id_curso,
-            cur.nome_curso,
-            cur.carga_horaria,
-            cur.valor
+            alu.ra_alu,
+            alu.cep_alu,
+            alu.id_matricula
         FROM alunos alu
-        INNER JOIN matriculas mat  ON mat.cpf_alu = alu.cpf_alu
-        INNER JOIN cursos cur      ON cur.id_curso = mat.id_curso
         WHERE alu.cpf_alu = ?
-        ORDER BY mat.data_matricula DESC
     `;
         const [registros] = await conexao.query(sql, [cpf]);
         await conexao.release();
 
 
-        let listaAlunos = [];
-        for (const registro of registros){
-            const alunos = new Alunos(registro.mat_cpf, registro.mat_nome, registro.mat_curso);
-            const matricula = new Matricula(registro.mat_cpf,
-                                            registro.mat_nome,
-                                            registro.mat_curso);
-                listaAlunos.push(alunos);
-        }
-
-        return listaAlunos;
+        return registros.map(registro =>
+        new Alunos(
+            registro.cpf_alu,
+            registro.nome_alu,
+            registro.sobrenome_alu,
+            registro.ra_alu,
+            registro.cep_alu,
+            registro.id_matricula
+        )
+    );
     }
 }
