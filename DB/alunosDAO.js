@@ -31,17 +31,16 @@ export default class AlunosDAO{
         }
     }
 
-    async alterar(alunos){
-        if (alunos instanceof alunos){
+    async alterar(aluno){
+        if (aluno instanceof Alunos){
             const conexao = await conectar();
             const sql = "UPDATE alunos SET nome_alu = ?, sobrenome_alu = ?, ra_alu = ?, cep_alu = ? WHERE cpf_alu = ? ";
             const parametros = [
-                alunos.nome,
-                alunos.sobrenome,
-                alunos.ra,
-                alunos.cep,
-                alunos.matricula,
-                alunos.cpf
+                aluno.nome,
+                aluno.sobrenome,
+                aluno.ra,
+                aluno.cep,
+                aluno.cpf
 
             ];
             await conexao.execute(sql, parametros);
@@ -70,7 +69,7 @@ export default class AlunosDAO{
             alu.sobrenome_alu,
             alu.ra_alu,
             alu.cep_alu,
-            alu.id_matricula,
+            alu.id_matricula
         FROM alunos alu
         `;
         const [registros] = await conexao.query(sql);

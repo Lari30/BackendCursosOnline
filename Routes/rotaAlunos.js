@@ -5,9 +5,16 @@ const alunosRouter = Router();
 
 const alunosCtrl = new AlunosController();
 
+//alunosRouter.get("/", (req, res) => alunosCtrl.consultar(req, res))
+//.get("/:cpf", (req, res) => alunosCtrl.consultar(req, res))
+//.post("/", alunosCtrl.gravar)
+//.post("/", alunosCtrl.gravar)
+//.put("/:cpf", alunosCtrl.alterar)
+//.delete("/:cpf", alunosCtrl.excluir);
+
 alunosRouter.get("/", alunosCtrl.consultar)
 .get("/:cpf", alunosCtrl.consultar)
-.post("/:cpf", (req, res) => alunosCtrl.gravar(req, res))
+.post("/",(req, res) => alunosCtrl.gravar(req,res))
 //.post("/", alunosCtrl.gravar)
 .put("/:cpf", alunosCtrl.alterar)
 .delete("/:cpf", alunosCtrl.excluir);

@@ -1,4 +1,5 @@
 import Alunos from "../Models/alunos.js";
+import AlunosDAO from "../DB/alunosDAO.js";
 
 export default class AlunosController{
 
@@ -6,7 +7,7 @@ export default class AlunosController{
 gravar(requisicao, resposta){
     if (requisicao.method === "POST" && requisicao.is("application/json")) { 
            const dados = requisicao.body;
-           const cpf = requisicao.params.cpf;
+           const cpf = dados.cpf;
            const matricula = dados.matricula ?? dados.id_matricula ?? null;
            
         if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && matricula ){
@@ -19,8 +20,9 @@ gravar(requisicao, resposta){
                 dados.cep, 
                 matricula
             );
+            const dao = new AlunosDAO();
 
-            alunos.gravar()
+            dao.gravar(alunos)
             .then(()=>{
                 resposta.status(200).json({
                     status: true,
@@ -60,7 +62,8 @@ gravar(requisicao, resposta){
 
         if (cpf && dados.nome && dados.sobrenome && dados.ra && dados.cep && matricula ){
             const alunos = new Alunos(cpf, dados.nome, dados.sobrenome, dados.ra, dados.cep, matricula);
-            alunos.alterar()
+            const dao = new AlunosDAO();
+            dao.alterar()
             .then(()=>{
                 resposta.status(200).json({
                     status: true,
@@ -92,8 +95,8 @@ gravar(requisicao, resposta){
         if(requisicao.method === "DELETE"){
             const cpf = requisicao.params.cpf;
             if(cpf){
-                const alunos = new Alunos();
-                alunos.consultarCPF(cpf)
+                const dao = new AlunosDAO();
+                dao.consultarCPF(cpf)
                 .then((listaAlunos) => {
                     const encontrado = listaAlunos[0];
                     if(encontrado){
@@ -143,9 +146,9 @@ gravar(requisicao, resposta){
     consultar(requisicao, resposta){
         if (requisicao.method === "GET"){
             const cpf = requisicao.params.cpf;
-            const alunos = new Alunos();
+            const dao = new AlunosDAO();
             if(cpf){
-                alunos.consultarCPF(cpf)
+                dao.consultarCPF(cpf)
                 .then((listaAlunos) => {
                     if (listaAlunos.length > 0 ) {
                      resposta.status(200).json({
@@ -175,7 +178,7 @@ gravar(requisicao, resposta){
 
             }
             else{
-                alunos.consultar()
+                dao.consultar()
                 .then((listaAlunos)=>{
                     resposta.status(200).json({
                         status: true,
